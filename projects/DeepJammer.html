@@ -93,43 +93,64 @@
                             Deep Learning Music Composition
                         </h3>
                     </a>
-                    <p class="post-meta">Posted on December 21, 2016</p>
+                    <p class="post-meta">Posted on January 15, 2017</p>
                     </div>
+                    
+                    <p>Deep Jammer is an algorithm for composing original music segments using deep learning that <a href="http://www.justinsvegliato.com">Justin Svegliato</a> and I collaborated on as the final project for two graduate level machine learning courses at UMass Amherst, CS689 - Machine Learning and CS697L - Deep Learning.</p>
 
-                    <p>Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman's earth, if free men make it, will be truly round: a globe in practice, not in theory.</p>
+                    <h2 class="section-heading">Introduction</h2>
 
-                    <p>Science cuts two ways, of course; its products can be used for both good and evil. But there's no turning back from science. The early warnings about technological dangers also come from science.</p>
+                    <p>Using machine learning to generate music is an inherently interesting task because it provides deep insight into the extent algorithms can represent human creativity. Unlike the common applications of deep learning for computer vision, which has a high degree of spatial invariance, or natural language processing, which has a high degree of temporal invariance, music inevitably includes both temporal and spatial invariances. This makes for a much more interesting technical challenge.</p>
 
-                    <p>What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.</p>
+                    <p> Motivation aside, here are some examples of the music composed by the deep-jammer algorithm. These music segments were generated after using a g2.2xlarge AWS EC2 instance to train the algorithm for approximately 5,000 epochs of 325 classical music compositions encoded as MIDI files.</p>
 
-                    <p>A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That's how I felt seeing the Earth for the first time. I could not help but love and cherish her.</p>
+                    <audio controls>
+                        <source src="audio/large network 1.mp3" type="audio/mpeg">
+                    </audio>
 
-                    <p>For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us.</p>
+                    <audio controls>
+                        <source src="audio/large network 2.mp3" type="audio/mpeg">
+                    </audio>
 
-                    <h2 class="section-heading">The Final Frontier</h2>
+                    <audio controls>
+                        <source src="audio/large network 3.mp3" type="audio/mpeg">
+                    </audio>
 
-                    <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
+                    <audio controls>
+                        <source src="audio/large network 4.mp3" type="audio/mpeg">
+                    </audio>
 
-                    <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
+                    <h2 class="section-heading">Methodology</h2>
 
-                    <blockquote>The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
+                    <p>While reinforcement learning methods are perhaps more consistent with how humans learn to compose music, the lack of a meaningful reward signal encouraged us to approach the task as a supervised problem using human-composed music as a training set. We used deep learning methods becauses of their ability to represent complex non-linear high-dimensional functions.</p>
 
-                    <p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+                    <p>To make the network learn a bit faster, we engineered musical features from the raw MIDI training files. Given a set of these features corresponding to a single time step as input, the task of the neural network model is to predict the notes to be played at the next time step.</p>
 
-                    <h2 class="section-heading">Reaching for the Stars</h2>
+                    <img src="img/Deep Jammer Input Output.png">
 
-                    <p>As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.</p>
+                    <p>The neural network architecture we explored is heavily inspired by Daniel Johnson's work on music generation, which can be found on his personal website <a href="http://www.hexahedria.com">hexahadria</a>. This architecture uses 2 distinct sets of recurrent layers (LSTMs) separated by a transpose layer to represent the temporal and spatial invariance of music. These two sets of LSTMs are called the time layers and the note layers.</p>
 
-                    <a href="#">
-                        <img class="img-responsive" src="img/post-sample-image.jpg" alt="">
-                    </a>
-                    <span class="caption text-muted">To go places and do things that have never been done before – that’s what living is all about.</span>
+                    <img src="img/Deep Jammer Architecture.png">
 
-                    <p>Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.</p>
+                    <p>An intuitive way of thinking about this architecture is that the transpose layer flips a switch between the time and note dimensions of the input data. This effectively switches which dimension, time and note, is stored in memory at each of the layers. This transpose layer is the missing piece that allows the neural network to represent both temporal and spatial (note) invariance simulataneously.</p>
 
-                    <p>As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.</p>
+                    <p> Training is completed using back-propagation, where at each time step the model is predicting the notes played at the next time step given the input features and stored history. The loss is defined as the negative log-likelihood of the predicted notes, given the actual notes played at the next time-step. A typical loss curve is shown below.</p>
 
-                    <p>Placeholder text by <a href="http://spaceipsum.com/">Space Ipsum</a>. Photographs by <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>.</p>
+                    <img src="img/Deep Jammer Loss Curve.png">
+
+                    <p>Composing music can be thought as recursive prediction given some random initialization. More precisely, notes are selected at each timestep by sampling from the output probabilities given the input features. Once selected, these notes are then used to generate features for the next time-step. This process is repeated until the algorithm terminates after a predetermined number of iterations.</p>
+
+                    <p>The following graphic shows how the music generation deveops with increasing amounts of training. Each of the 4 compositions shown were generated using the network parameters at the corresponding stages in the loss curve. The network first learns the appropriate amount of sparsity, then learns basic musical structure, and finally converges to a network that produces human-like compositions.</p>
+
+                     <img src="img/Deep Jammer Stages.png">
+
+                    <p> Stage 5 and 6 on the loss curve show the effect of transfer learning to jazz music, which is discussed indetail in our report. </p>
+
+                    <h2 class="section-heading">Further Reading</h2>
+
+                    <p>In the interest of brevity I've omitted a large portion of the project work on alternative architectures, transfer learning, and analysis of survey results. If you're interesting in reading more please feel free to take a look at our full <a href="download/Deep Jammer Report.pdf" download="Deep Jammer Report">report</a> and <a href="download/Deep Jammer Poster.pdf" download="Deep Jammer Poster">poster</a>. You can also find the entire implementation using both Keras and Theano in the <a href="https://github.com/justinsvegliato/deep-jammer">project repository</a>.</p>
+
+
                 </div>
             </div>
         </div>
