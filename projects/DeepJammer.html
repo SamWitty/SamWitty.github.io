@@ -55,9 +55,9 @@
                     <li>
                         <a href="projects.html">Projects</a>
                     </li>
-                    <li>
+                    <!--<li>
                         <a href="tutorials.html">Tutorials</a>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -81,7 +81,7 @@
     <article>
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1">
 
                     <div class="post-preview">
                     <a href="projects.html#deepjammer">
@@ -130,8 +130,6 @@
 
                     <p>The neural network architecture we explored is heavily inspired by Daniel Johnson's work on music generation, which can be found on his personal website <a href="http://www.hexahedria.com">hexahadria</a>. This architecture uses 2 distinct sets of recurrent layers (LSTMs) separated by a transpose layer to represent the temporal and spatial invariance of music. These two sets of LSTMs are called the time layers and the note layers.</p>
 
-                    Revise graphic
-
                     <img src="img/Deep Jammer Architecture.png">
 
                     <p>An intuitive way of thinking about this architecture is that the transpose layer flips a switch between the time and note dimensions of the input data. This effectively switches which dimension, time and note, is stored in memory at each of the layers. This transpose layer is the missing piece that allows the neural network to represent both temporal and spatial (note) invariance simulataneously.</p>
@@ -146,7 +144,7 @@
 
                      <img src="img/Deep Jammer Stages.png">
 
-                    <p> Stage 5 and 6 on the loss curve show the effect of transfer learning to jazz music, which is discussed indetail in our report. </p>
+                    <p> Stage 5 and 6 on the loss curve show the effect of transfer learning to jazz music, which is discussed in detail in our report. </p>
 
                     <h2 class="section-heading">Further Reading</h2>
 
