@@ -1,5 +1,19 @@
+# Site settings
+title: Sam Witty
+email: switty@cs.umass.edu
+url: "http://cs.umass.edu/~switty" 
+excerpt_separator: <!--summary-->
+comments: true
+
 # Build settings
 markdown: kramdown
+paginate: 5
+paginate_path: "/blog/page:num/"
+posts: blog
 theme: minima
+
 plugins:
-  - jekyll-feed
+- jekyll-lunr-js-search
+- jekyll-paginate
+- jekyll-mentions
+- jekyll-gist

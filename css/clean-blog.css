@@ -4,12 +4,11 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 img.profile {
-  float: right;
   height: 225px;
   width: 225px;
   border: 3px black;
   border-style: solid;
-  margin: 0px 10px 0px 0px;
+  margin: 20px 0px 20px 0px;
 }
 @media (max-width: 500px) {
   img.profile {
@@ -23,12 +22,12 @@ img.profile {
 
 body {
   font-family: 'Lora', 'Times New Roman', serif;
-  font-size: 20px;
+  font-size: 18px;
   color: #333333;
 }
 p {
   line-height: 1.5;
-  margin: 30px 0;
+  margin: 15px 0;
 }
 p a {
   text-decoration: underline;
@@ -168,9 +167,9 @@ hr.small {
   -moz-background-size: cover;
   background-size: cover;
   -o-background-size: cover;
-/*  margin-bottom: 50px;
-  height: 80vh;*/
-  height: 480px;
+  margin-bottom: 20px;
+  height: 50vh;
+  /*height: 480px;*/
 }
 .intro-header .site-heading,
 .intro-header .post-heading,
