@@ -4,11 +4,13 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 img.profile {
-  height: 225px;
-  width: 225px;
+  max-width: 225px;
+  height: auto;
+  display: inline-block;
   border: 3px black;
   border-style: solid;
   margin: 10px 0px 20px 0px;
+  margin-right: 200px;
 }
 @media (max-width: 500px) {
   img.profile {
