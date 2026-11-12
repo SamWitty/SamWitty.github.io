@@ -1,0 +1,273 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getEssays, formatDate } from '../../lib/essays';
+
+export async function getStaticPaths() {
+  const essays = await getEssays();
+  return essays.map((essay) => ({ params: { slug: essay.id }, props: { essay } }));
+}
+
+const { essay } = Astro.props;
+const { Content, headings } = await render(essay);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<Base title={`${essay.data.title} · Sam Witty`} description={essay.data.description}>
+  <div class="page">
+    {
+      toc.length > 0 && (
+        <nav class="toc small" aria-label="Contents">
+          <ol>
+            {toc.map((h) => (
+              <li class={`d${h.depth}`}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <article>
+      <header>
+        <a class="home small" href="/">Sam Witty</a>
+        <h1>{essay.data.title}</h1>
+        <p class="muted small">{formatDate(essay.data.date)}</p>
+      </header>
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+  </div>
+</Base>
+
+<script>
+  // Highlight the section currently being read in the table of contents.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('.toc a')].map((a) => [decodeURIComponent(a.hash.slice(1)), a]),
+  );
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        links.forEach((a) => a.classList.remove('active'));
+        links.get(entry.target.id)?.classList.add('active');
+      }
+    },
+    { rootMargin: '0px 0px -75% 0px' },
+  );
+  links.forEach((_, id) => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+</script>
+
+<style>
+  /* Three columns on wide screens: contents | text | sidenotes */
+  .page {
+    --toc-width: 13rem;
+    --note-width: 15rem;
+    --gap: 3rem;
+    display: grid;
+    grid-template-columns: var(--toc-width) minmax(0, var(--measure)) var(--note-width);
+    column-gap: var(--gap);
+    justify-content: center;
+    padding: 4.5rem 1rem 8rem;
+  }
+
+  article {
+    grid-column: 2;
+  }
+
+  header {
+    margin-bottom: 2.5rem;
+  }
+
+  .home {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  h1 {
+    font-size: 2.125rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  header p {
+    margin: 0;
+  }
+
+  .toc {
+    grid-column: 1;
+    position: sticky;
+    top: 4.5rem;
+    align-self: start;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    margin-top: 7.5rem;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc li {
+    margin-bottom: 0.55rem;
+    line-height: 1.35;
+  }
+
+  .toc li.d3 {
+    padding-left: 0.9rem;
+  }
+
+  .toc a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .toc a:hover,
+  .toc a.active {
+    color: var(--text);
+  }
+
+  /* Prose */
+  .prose :global(h2) {
+    font-size: 1.375rem;
+    margin: 3rem 0 1rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .prose :global(h3) {
+    font-size: 1.125rem;
+    margin: 2.25rem 0 0.75rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol),
+  .prose :global(blockquote) {
+    margin: 0 0 1.25rem;
+  }
+
+  .prose :global(blockquote) {
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--rule);
+    color: var(--muted);
+  }
+
+  .prose :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: 3rem 0;
+  }
+
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose :global(code) {
+    font-size: 0.85em;
+  }
+
+  .prose :global(pre) {
+    overflow-x: auto;
+    padding: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    border: 1px solid var(--rule);
+  }
+
+  /* Sidenotes (generated from Markdown footnotes by src/lib/rehype-sidenotes.mjs) */
+  .prose :global(.sn-ref) {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    line-height: 0;
+    padding: 0 0.1em;
+    color: var(--muted);
+  }
+
+  .prose :global(.sn-ref sup) {
+    vertical-align: super;
+  }
+
+  .prose :global(.sn-toggle) {
+    display: none;
+  }
+
+  .prose :global(.sidenote) {
+    float: right;
+    clear: right;
+    width: var(--note-width);
+    margin-right: calc(-1 * (var(--note-width) + var(--gap)));
+    margin-top: 0.3rem;
+    margin-bottom: 1rem;
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .prose :global(.sn-block) {
+    display: block;
+  }
+
+  .prose :global(.sn-num + .sn-block) {
+    display: inline;
+  }
+
+  .prose :global(.sn-block + .sn-block) {
+    margin-top: 0.5rem;
+  }
+
+  .prose :global(.sidenote a) {
+    color: inherit;
+  }
+
+  .prose :global(.sn-num) {
+    font-weight: 600;
+  }
+
+  /* Medium screens: drop the contents column, keep notes in the margin. */
+  @media (max-width: 75rem) {
+    .page {
+      grid-template-columns: minmax(0, var(--measure)) var(--note-width);
+    }
+    .toc {
+      display: none;
+    }
+    article {
+      grid-column: 1;
+    }
+  }
+
+  /* Narrow screens: tap a note number to expand it inline. */
+  @media (max-width: 56rem) {
+    .page {
+      grid-template-columns: minmax(0, var(--measure));
+      padding-top: 3rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+    }
+    .prose :global(.sn-ref) {
+      cursor: pointer;
+      color: var(--text);
+    }
+    .prose :global(.sidenote) {
+      display: none;
+      float: none;
+      width: auto;
+      margin: 0.75rem 0;
+      padding: 0.75rem 1rem;
+      border-left: 2px solid var(--rule);
+    }
+    .prose :global(.sn-toggle:checked + .sidenote) {
+      display: block;
+    }
+  }
+</style>
