@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Sam Witty">
+  <main class="home">
+    <h1>Sam Witty</h1>
+
+    <p>
+      Sam Witty is a senior research scientist at <a href="https://www.tri.global">Toyota Research Institute</a>, where
+      he works on AI technology for scaling up reliable science and engineering. His work draws on a variety of fields:
+      LLM-based agents, causality, probability/statistics, epistemology, and programming languages.
+    </p>
+    <p>
+      Before that, Sam founded Sorbus, an AI consultancy for hard tech R&amp;D teams. Earlier, he was a senior research scientist at <a href="https://basis.ai">Basis</a> and
+      a core developer on the <a href="https://basisresearch.github.io/chirho/getting_started.html">ChiRho</a> causal probabilistic
+      programming language. He completed his PhD at UMass Amherst and was a visiting researcher at MIT.
+    </p>
+    <p class="links">
+      <span>samawitty [at] gmail.com</span>
+      <a href="https://scholar.google.com/citations?user=EUGPPvQAAAAJ&amp;view_op=list_works&amp;sortby=pubdate">Google Scholar</a>
+    </p>
+  </main>
+</Base>
+
+<style>
+  .home {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 5rem 1rem 6rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    margin: 0 0 1.75rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin-top: 1.75rem;
+  }
+</style>
